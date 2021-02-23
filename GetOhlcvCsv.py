@@ -8,7 +8,7 @@ from OhclvTA import OhclvTechnicalAnalyzeCalculator
 
 
 def get_url():
-    return "https://query1.finance.yahoo.com/v8/finance/chart/%5EN225?symbol=%5EN225&period1=1524153600&period2=1610598552&interval=1d"
+    return "https://query1.finance.yahoo.com/v8/finance/chart/%5EN225?symbol=%5EN225&period1=1577854845&period2=1614053083&interval=1d"
 
 
 print("Start")
@@ -27,6 +27,7 @@ ohlcv_df["Volume"] = np.array(ohlcv_json["chart"]["result"][0]["indicators"]["qu
 
 # 本家のほうがDataFrame渡しになったら変える
 ohlcv_df = OhclvTechnicalAnalyzeCalculator.calc(ohlcv_df.values.tolist())
+ohlcv_df.to_csv("hoge.csv")
 
 # DateTime列をIndexにする
 ohlcv_df = ohlcv_df.set_index('Timestamp')
@@ -40,6 +41,7 @@ apd_oscilator = [
     mpf.make_addplot(ohlcv_df["Adx"], panel=1),
     ]
 # 描画(https://saturday-in-the-park.netlify.app/TradingTools/06_PlotDailyChart/)
-mpf.plot(ohlcv_df, type='candle', addplot=apd_oscilator)
+mpf.plot(ohlcv_df, type='candle', style='yahoo',  addplot=apd_oscilator)
+
 
 print("End")

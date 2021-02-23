@@ -41,13 +41,50 @@ class OhclvTechnicalAnalyzeCalculator():
         df_ohclv['BbL'] = lowerband
 
         # ATR(Average True Range)
-        df_ohclv['Adx'] = ta.ATR(h, l, c, timeperiod=14)
+        df_ohclv['ATR'] = ta.ATR(h, l, c, timeperiod=14)
 
         # SIC (期間中の最大と最小)
-        df_ohclv["SicH"] = pd.Series(df_ohclv.Close).rolling(window=20).max()
-        df_ohclv["SicL"] = pd.Series(df_ohclv.Close).rolling(window=20).min()
+        df_ohclv["SicH"] = pd.Series(c).rolling(window=20).max()
+        df_ohclv["SicL"] = pd.Series(c).rolling(window=20).min()
 
+        # SAR (Stop and Rverse)
+        df_ohclv["SarH"] = df_ohclv["SicH"] - df_ohclv['ATR'] * 3.3
+        df_ohclv["SarL"] = df_ohclv["SicL"] + df_ohclv['ATR'] * 3.3
 
+        # SAR Trend
+        ary_SarH = np.array(df_ohclv["SarH"])
+        ary_SarL = np.array(df_ohclv["SarL"])
+        ary_SarT = []
+        ary_Sar = []
+
+        for idx in range(df_ohclv.shape[0]):
+            if idx == 0:
+                ary_SarT.append('None')
+                ary_Sar.append(0)
+                continue
+
+            # SarLをCloseが上抜け(Golden Cross)
+            if ary_SarL[idx - 1] > c[idx - 1] and \
+                    ary_SarL[idx] <= c[idx]:
+                ary_SarT.append('Long')
+                ary_Sar.append(ary_SarH[idx])
+            # SarHをCloseが下抜け(Golden Cross)
+            elif ary_SarH[idx - 1] < c[idx - 1] and \
+                    ary_SarH[idx] >= c[idx]:
+                ary_SarT.append('Short')
+                ary_Sar.append(ary_SarL[idx])
+            else:
+                # 前日のトレンドを保持
+                ary_SarT.append(ary_SarT[idx - 1])
+                if ary_SarT[idx] == 'Long':
+                    ary_Sar.append(ary_SarH[idx])
+                elif ary_SarT[idx] == 'Short':
+                    ary_Sar.append(ary_SarL[idx])
+                else:
+                    ary_Sar.append(0)
+
+        df_ohclv["SarT"] = ary_SarT
+        df_ohclv["Sar"] = ary_Sar
 
         # # Simple Moving Average 5
         # df_ohclv['Sma5'] = pd.Series(df_ohclv.Close).rolling(window=5).mean()
