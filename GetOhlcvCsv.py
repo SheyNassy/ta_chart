@@ -3,12 +3,12 @@ import json
 import numpy as np
 import pandas as pd
 import mplfinance as mpf
-
 from OhclvTA import OhclvTechnicalAnalyzeCalculator
 
 
 def get_url():
-    return "https://query1.finance.yahoo.com/v8/finance/chart/%5EN225?symbol=%5EN225&period1=1577854845&period2=1614053083&interval=1d"
+    return "https://query1.finance.yahoo.com/v8/finance/chart/BTC-JPY?symbol=BTC-JPY&period1=1612137600&period2=1614133260&interval=1h"
+    # return "https://query1.finance.yahoo.com/v8/finance/chart/%5EN225?symbol=%5EN225&period1=1577854845&period2=1614053083&interval=1d"
 
 
 print("Start")
@@ -37,8 +37,12 @@ apd_oscilator = [
     mpf.make_addplot(ohlcv_df["BbH"], panel=0),
     mpf.make_addplot(ohlcv_df["BbM"], panel=0),
     mpf.make_addplot(ohlcv_df["BbL"], panel=0),
-    mpf.make_addplot(ohlcv_df["StdDev"], panel=1),
-    mpf.make_addplot(ohlcv_df["Adx"], panel=1),
+    mpf.make_addplot(ohlcv_df["StdDev"], panel=1, color='g'),
+    mpf.make_addplot(ohlcv_df["Adx"], panel=1, color='r'),
+    mpf.make_addplot(ohlcv_df["SdBlaTp"], panel=2, type='bar', color='r', width=1),
+    mpf.make_addplot(ohlcv_df["SdBlaTm"], panel=2, type='bar', color='b', width=1),
+    mpf.make_addplot(ohlcv_df["SarTp"], panel=3, type='bar', color='r', width=1),
+    mpf.make_addplot(ohlcv_df["SarTm"], panel=3, type='bar', color='b', width=1),
     ]
 # 描画(https://saturday-in-the-park.netlify.app/TradingTools/06_PlotDailyChart/)
 mpf.plot(ohlcv_df, type='candle', style='yahoo',  addplot=apd_oscilator)
