@@ -8,6 +8,10 @@ class OhclvTechnicalAnalyzeCalculator():
         # 生配列をnp DataFrameに変換
         df_ohclv = pd.DataFrame(marketItem,
                                 columns=['Timestamp', 'Open', 'High', 'Low', 'Close', 'Volume'])
+        # 欠損値の削除
+        df_ohclv = df_ohclv.dropna()
+
+        # PlotlyとTA-libでテクニカル分析チャートを描く
         # https://akatak.hatenadiary.jp/entry/2019/11/23/220836
 
         h = np.array(df_ohclv['High'].fillna(method='ffill'))
@@ -16,6 +20,8 @@ class OhclvTechnicalAnalyzeCalculator():
 
         # Simple Moving Average 5
         df_ohclv['Sma5'] = ta.SMA(c, timeperiod=5)
+        # Simple Moving Average 10
+        df_ohclv['Sma10'] = ta.SMA(c, timeperiod=10)
         # Simple Moving Average 20
         df_ohclv['Sma20'] = ta.SMA(c, timeperiod=20)
         # Simple Moving Average 60
