@@ -72,6 +72,20 @@ class OhclvTechnicalAnalyzeCalculator():
         ary_SdBlaTp = []
         ary_SdBlaTm = []
 
+        # 移動平均大循環分析 & 乖離率
+        ary_SMA5 = np.array(df_ohclv["Sma5"])
+        ary_SMA20 = np.array(df_ohclv["Sma20"])
+        ary_SMA60 = np.array(df_ohclv["Sma60"])
+        ary_MACycle = []
+        ary_MACycleT = []
+        ary_MACycleT1 = []
+        ary_MACycleT2 = []
+        ary_MACycleT3 = []
+        ary_MACycleT4 = []
+        ary_MACycleT5 = []
+        ary_MACycleT6 = []
+        ary_MADiff_5_60 = []
+
         # 自分でループしないと計算できないヤツラ
         for idx in range(df_ohclv.shape[0]):
             if idx == 0:
@@ -83,6 +97,17 @@ class OhclvTechnicalAnalyzeCalculator():
                 ary_SdBlaT.append(0)
                 ary_SdBlaTp.append(0)
                 ary_SdBlaTm.append(0)
+
+                ary_MACycle.append(0)
+                ary_MACycleT.append(0)
+                ary_MACycleT1.append(0)
+                ary_MACycleT2.append(0)
+                ary_MACycleT3.append(0)
+                ary_MACycleT4.append(0)
+                ary_MACycleT5.append(0)
+                ary_MACycleT6.append(0)
+                ary_MADiff_5_60.append(0)
+
                 continue
 
             # SAR (Stop and Reverse)
@@ -113,16 +138,16 @@ class OhclvTechnicalAnalyzeCalculator():
                 else:
                     ary_Sar.append(0)
 
-            #標準偏差ボラティリティトレードモデル
+            # 標準偏差ボラティリティトレードモデル
             if ary_StdDev[idx] > ary_StdDev[idx - 1] and \
                     ary_Adx[idx] > ary_Adx[idx - 1] and \
-                c[idx] >= ary_uband[idx]:
+                    c[idx] >= ary_uband[idx]:
                 ary_SdBlaT.append(1)
                 ary_SdBlaTp.append(1)
                 ary_SdBlaTm.append(0)
             elif ary_StdDev[idx] > ary_StdDev[idx - 1] and \
                     ary_Adx[idx] > ary_Adx[idx - 1] and \
-                c[idx] <= ary_lband[idx]:
+                    c[idx] <= ary_lband[idx]:
                 ary_SdBlaT.append(-1)
                 ary_SdBlaTp.append(0)
                 ary_SdBlaTm.append(1)
@@ -141,6 +166,78 @@ class OhclvTechnicalAnalyzeCalculator():
                 ary_SdBlaTp.append(0)
                 ary_SdBlaTm.append(0)
 
+            # 移動平均大循環分析 & 乖離率
+            if ary_SMA5[idx] >= ary_SMA20[idx] >= ary_SMA60[idx]:
+                ary_MACycle.append("ST1")
+                ary_MACycleT.append(1)
+                ary_MACycleT1.append(1)
+                ary_MACycleT2.append(0)
+                ary_MACycleT3.append(0)
+                ary_MACycleT4.append(0)
+                ary_MACycleT5.append(0)
+                ary_MACycleT6.append(0)
+                ary_MADiff_5_60.append(ary_SMA5[idx] / ary_SMA60[idx] * 100)
+            elif ary_SMA20[idx] >= ary_SMA5[idx] >= ary_SMA60[idx]:
+                ary_MACycle.append("ST2")
+                ary_MACycleT.append(0)
+                ary_MACycleT1.append(0)
+                ary_MACycleT2.append(1)
+                ary_MACycleT3.append(0)
+                ary_MACycleT4.append(0)
+                ary_MACycleT5.append(0)
+                ary_MACycleT6.append(0)
+                ary_MADiff_5_60.append(ary_SMA5[idx] / ary_SMA60[idx] * 100)
+            elif ary_SMA20[idx] >= ary_SMA60[idx] >= ary_SMA5[idx]:
+                ary_MACycle.append("ST3")
+                ary_MACycleT.append(0)
+                ary_MACycleT1.append(0)
+                ary_MACycleT2.append(0)
+                ary_MACycleT3.append(1)
+                ary_MACycleT4.append(0)
+                ary_MACycleT5.append(0)
+                ary_MACycleT6.append(0)
+                ary_MADiff_5_60.append(ary_SMA5[idx] / ary_SMA60[idx] * 100)
+            elif ary_SMA60[idx] >= ary_SMA20[idx] >= ary_SMA5[idx]:
+                ary_MACycle.append("ST4")
+                ary_MACycleT.append(-1)
+                ary_MACycleT1.append(0)
+                ary_MACycleT2.append(0)
+                ary_MACycleT3.append(0)
+                ary_MACycleT4.append(1)
+                ary_MACycleT5.append(0)
+                ary_MACycleT6.append(0)
+                ary_MADiff_5_60.append(ary_SMA5[idx] / ary_SMA60[idx] * 100)
+            elif ary_SMA60[idx] >= ary_SMA5[idx] >= ary_SMA20[idx]:
+                ary_MACycle.append("ST5")
+                ary_MACycleT.append(0)
+                ary_MACycleT1.append(0)
+                ary_MACycleT2.append(0)
+                ary_MACycleT3.append(0)
+                ary_MACycleT4.append(0)
+                ary_MACycleT5.append(1)
+                ary_MACycleT6.append(0)
+                ary_MADiff_5_60.append(ary_SMA5[idx] / ary_SMA60[idx] * 100)
+            elif ary_SMA5[idx] >= ary_SMA60[idx] >= ary_SMA20[idx]:
+                ary_MACycle.append("ST6")
+                ary_MACycleT.append(0)
+                ary_MACycleT1.append(0)
+                ary_MACycleT2.append(0)
+                ary_MACycleT3.append(0)
+                ary_MACycleT4.append(0)
+                ary_MACycleT5.append(0)
+                ary_MACycleT6.append(1)
+                ary_MADiff_5_60.append(ary_SMA5[idx] / ary_SMA60[idx] * 100)
+            else:
+                ary_MACycle.append("None")
+                ary_MACycleT.append(0)
+                ary_MACycleT1.append(0)
+                ary_MACycleT2.append(0)
+                ary_MACycleT3.append(0)
+                ary_MACycleT4.append(0)
+                ary_MACycleT5.append(0)
+                ary_MACycleT6.append(0)
+                ary_MADiff_5_60.append(0)
+
         df_ohclv["SarT"] = ary_SarT
         df_ohclv["SarTp"] = ary_SarTp
         df_ohclv["SarTm"] = ary_SarTm
@@ -149,6 +246,16 @@ class OhclvTechnicalAnalyzeCalculator():
         df_ohclv["SdBlaT"] = ary_SdBlaT
         df_ohclv["SdBlaTp"] = ary_SdBlaTp
         df_ohclv["SdBlaTm"] = ary_SdBlaTm
+
+        df_ohclv["MACycle"] = ary_MACycle
+        df_ohclv["MACycleT"] = ary_MACycleT
+        df_ohclv["MACycleT1"] = ary_MACycleT1
+        df_ohclv["MACycleT2"] = ary_MACycleT2
+        df_ohclv["MACycleT3"] = ary_MACycleT3
+        df_ohclv["MACycleT4"] = ary_MACycleT4
+        df_ohclv["MACycleT5"] = ary_MACycleT5
+        df_ohclv["MACycleT6"] = ary_MACycleT6
+        df_ohclv["MADiff_5_60"] = ary_MADiff_5_60
 
         # # Simple Moving Average 5
         # df_ohclv['Sma5'] = pd.Series(df_ohclv.Close).rolling(window=5).mean()

@@ -19,10 +19,11 @@ def get_url(MeigaraCode, DateTimeFrom, DateTimeTo, Piriod):
 
 
 print("Start")
-str_mei = "%5EN225"
-str_dtf = "2018-12-01"
-str_dtt = "2019-12-31"
-str_url = get_url(str_mei, str_dtf, str_dtt, "1d")
+str_mei = "BTC-JPY"
+# str_mei = "%5EN225"
+str_dtf = "2021-02-20"
+str_dtt = "2021-02-28"
+str_url = get_url(str_mei, str_dtf, str_dtt, "1h")
 str_csv = str_mei + "_" + str_dtf + "_" + str_dtt + ".csv"
 
 readObj = urllib.request.urlopen(str_url)
@@ -55,9 +56,15 @@ apd_oscilator = [
     mpf.make_addplot(ohlcv_df["SdBlaTm"], panel=2, type='bar', color='b', width=1),
     mpf.make_addplot(ohlcv_df["SarTp"], panel=3, type='bar', color='r', width=1),
     mpf.make_addplot(ohlcv_df["SarTm"], panel=3, type='bar', color='b', width=1),
+    mpf.make_addplot(ohlcv_df["MACycleT1"], panel=4, type='bar', color='#EF0000', width=1),
+    mpf.make_addplot(ohlcv_df["MACycleT2"], panel=4, type='bar', color='#FFF500', width=1),
+    mpf.make_addplot(ohlcv_df["MACycleT3"], panel=4, type='bar', color='#009825', width=1),
+    mpf.make_addplot(ohlcv_df["MACycleT4"], panel=4, type='bar', color='#00A3E7', width=1),
+    mpf.make_addplot(ohlcv_df["MACycleT5"], panel=4, type='bar', color='#A1007E', width=1),
+    mpf.make_addplot(ohlcv_df["MACycleT6"], panel=4, type='bar', color='#F00082', width=1),
 ]
 # 描画(https://saturday-in-the-park.netlify.app/TradingTools/06_PlotDailyChart/)
-# mpf.plot(ohlcv_df, type='candle', style='yahoo',  addplot=apd_oscilator)
+mpf.plot(ohlcv_df, type='candle', style='yahoo',  addplot=apd_oscilator)
 
 
 print("End")
