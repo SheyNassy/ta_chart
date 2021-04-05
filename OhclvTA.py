@@ -86,6 +86,23 @@ class OhclvTechnicalAnalyzeCalculator():
         ary_MACycleT6 = []
         ary_MADiff_5_60 = []
 
+        # Trend Balance Point
+        # モメンタムファクター 当日終値とTBP_K日前の終値の差分
+        ary_mf = pd.Series(df_ohclv.Close) - pd.Series(df_ohclv.Close).shift(2)
+        # TBP 上昇トレンド転換値(上昇トレンド、TBP(当日) ＝ 前々日終値 ＋ (前日MF、前々日MFの小さい方）)
+        ary_Tbpp = pd.Series(df_ohclv.Close).shift(2) + np.min([ary_mf.shift(1),
+                                                                ary_mf.shift(2)],
+                                                               axis=0)
+        # TBP 下降トレンド転換値(下落トレンド、TBP(当日) ＝ 前々日終値 ＋ (前日MF、前々日MFの大きい方）)
+        ary_Tbpm = pd.Series(df_ohclv.Close).shift(2) + np.max([ary_mf.shift(1),
+                                                                ary_mf.shift(2)],
+                                                               axis=0)
+
+        # np.max([df_ohclv.High - df_ohclv.Low,
+        #        #                          (pd.Series(df_ohclv.Close).shift(1) - df_ohclv.High).abs(),
+        #        #                          (pd.Series(df_ohclv.Close).shift(1) - df_ohclv.Low).abs()],
+        #        #                         axis=0)
+
         # 自分でループしないと計算できないヤツラ
         for idx in range(df_ohclv.shape[0]):
             if idx == 0:
@@ -256,6 +273,10 @@ class OhclvTechnicalAnalyzeCalculator():
         df_ohclv["MACycleT5"] = ary_MACycleT5
         df_ohclv["MACycleT6"] = ary_MACycleT6
         df_ohclv["MADiff_5_60"] = ary_MADiff_5_60
+
+        df_ohclv["TbpMf"] = ary_mf
+        df_ohclv["TbpP"] = ary_Tbpp
+        df_ohclv["TbpM"] = ary_Tbpm
 
         # # Simple Moving Average 5
         # df_ohclv['Sma5'] = pd.Series(df_ohclv.Close).rolling(window=5).mean()
